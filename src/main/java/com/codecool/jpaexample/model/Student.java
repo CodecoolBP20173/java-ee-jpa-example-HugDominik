@@ -1,13 +1,11 @@
 package com.codecool.jpaexample.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Student {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,30 +13,44 @@ public class Student {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
+    @Transient
     private long age;
 
     @OneToOne
     private Address address;
 
+    @ElementCollection
+    @Column(name = "phone")
+    private List<String> phoneNumbers;
+
+    @ManyToOne
+    private Klass klass;
+
+
     public Student() {
     }
 
-    public Student(String name, String email, Date dateOfBirth) {
+    public Student(String name, String email, Date dateOfBirth, List<String> phoneNumbers) {
         this.name = name;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.age = (Calendar.getInstance().getTimeInMillis() - dateOfBirth.getTime())
                 / (60L * 60L * 1000L * 24L * 365L);
+        this.phoneNumbers = phoneNumbers;
     }
 
-    public Student(String name, String email, Date dateOfBirth, Address address) {
-        this(name, email, dateOfBirth);
+    public Student(String name, String email, Date dateOfBirth, Address address, List<String> phoneNumbers) {
+        this.name = name;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
         this.address = address;
+        this.phoneNumbers = phoneNumbers;
     }
 
     public long getId() {
@@ -95,4 +107,15 @@ public class Student {
                 '}';
     }
 
+    public Klass getKlass() {
+        return klass;
+    }
+
+    public void setKlass(Klass klass) {
+        this.klass = klass;
+    }
+
+    public List<String> getPhoneNumbers() {
+        return Collections.unmodifiableList(phoneNumbers);
+    }
 }
